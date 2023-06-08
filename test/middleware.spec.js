@@ -15,12 +15,16 @@
  * Module dependencies.
  */
 
-const path = require('path');
-const request = require('supertest');
-const Koa = require('koa');
-const bodyParser = require('..');
+import fs from 'fs';
+import path from 'path';
+import request from 'supertest';
+import Koa from 'koa';
+import { fileURLToPath } from 'url';
+import bodyParser from '../index.js';
 
-const fixtures = path.join(__dirname, 'fixtures');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const rawJson = JSON.parse(fs.readFileSync(path.resolve(__dirname, './fixtures/raw.json')));
 
 describe('test/middleware.test.js', function() {
   describe('json body', function() {
@@ -84,7 +88,7 @@ describe('test/middleware.test.js', function() {
       });
       request(app.listen())
         .post('/')
-        .send(require(path.join(fixtures, 'raw.json')))
+        .send(rawJson)
         .expect(413, done);
     });
 

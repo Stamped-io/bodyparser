@@ -14,8 +14,9 @@
  * Module dependencies.
  */
 
-const parse = require('co-body');
-const copy = require('copy-to');
+import {IncomingForm} from 'formidable';
+import parse from 'co-body';
+import copy from 'copy-to';
 
 /**
  * @param [Object] opts
@@ -25,7 +26,7 @@ const copy = require('copy-to');
  *   - {Object} extendTypes
  */
 
-module.exports = function(opts) {
+export default function(opts) {
   opts = opts || {};
   const {detectJSON} = opts;
   const {onerror} = opts;
@@ -100,6 +101,10 @@ module.exports = function(opts) {
     }
 
     if (enableForm && ctx.request.is(formTypes)) {
+      if (ctx.request.is(formTypes) === 'multipart/form-data') {
+        return await parseMultipart(ctx, formOpts); // eslint-disable-line no-return-await
+      }
+
       return await parse.form(ctx, formOpts); // eslint-disable-line no-return-await
     }
 
@@ -113,7 +118,20 @@ module.exports = function(opts) {
 
     return {};
   }
-};
+
+  async function parseMultipart(ctx, options = {}) {
+    const form = new IncomingForm({keepExtensions: true, ...options});
+    return new Promise((resolve, reject) => {
+      form.parse(ctx.req, (err, fields, files) => {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve({parsed: {fields, files}});
+      });
+    });
+  }
+}
 
 function formatOptions(opts, type) {
   const res = {};

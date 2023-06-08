@@ -3,6 +3,7 @@
   "version": "4.4.0",
   "description": "a body parser for Koa",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "lint": "xo",
     "lint:fix": "xo --fix",
@@ -42,7 +43,8 @@
   },
   "dependencies": {
     "co-body": "^6.0.0",
-    "copy-to": "^2.0.1"
+    "copy-to": "^2.0.1",
+    "formidable": "^3.2.5"
   },
   "xo": {
     "prettier": true,
@@ -50,6 +52,10 @@
     "extends": [
       "xo-lass"
     ],
+    "parserOptions": {
+      "ecmaVersion": 2020,
+      "sourceType": "module"
+    },
     "rules": {
       "node/no-deprecated-api": "off",
       "no-unused-vars": "off",
